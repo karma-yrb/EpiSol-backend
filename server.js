@@ -9,8 +9,16 @@ const port = 3001;
 
 const secretKey = 'your_secret_key';
 
+// CORS dynamique selon la variable d'environnement
+const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
 app.use(cors({
-  origin: "http://localhost:3000", // Autoriser uniquement le frontend sur le port 3000
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 
