@@ -1,4 +1,5 @@
-const mysql = require('mysql');
+const isProduction = process.env.RENDER === 'true' || process.env.NODE_ENV === 'production';
+const mysql = isProduction ? require('mysql2') : require('mysql');
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -11,7 +12,6 @@ const db = mysql.createConnection({
 db.connect((err) => {
   if (err) {
     console.error('Erreur de connexion à la base de données:', err);
-    process.exit(1);
   } else {
     console.log('Connexion à la base de données réussie');
   }
