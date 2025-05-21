@@ -14,7 +14,9 @@ const {
 // POST enregistrer un achat
 router.post('/', (req, res) => {
   const { beneficiaire_id, lignes } = req.body;
+  console.log('[BACKEND] POST /achats - body reçu:', req.body);
   if (!beneficiaire_id || !Array.isArray(lignes) || lignes.length === 0) {
+    console.log('[BACKEND] POST /achats - requête invalide');
     return res.status(400).json({ error: 'Bénéficiaire et lignes d\'achat requis' });
   }
   const total = calcTotalAchat(lignes);
@@ -23,6 +25,7 @@ router.post('/', (req, res) => {
     [beneficiaire_id, total],
     (err, result) => {
       if (err) {
+        console.error('[BACKEND] POST /achats - erreur SQL INSERT ACHAT:', err);
         return res.status(500).json({ error: 'Erreur lors de l\'enregistrement de l\'achat' });
       }
       const achat_id = result.insertId;
@@ -32,8 +35,10 @@ router.post('/', (req, res) => {
         [lignesValues],
         (err2) => {
           if (err2) {
+            console.error('[BACKEND] POST /achats - erreur SQL INSERT LIGNES:', err2);
             return res.status(500).json({ error: 'Erreur lors de l\'enregistrement des lignes d\'achat' });
           }
+          console.log('[BACKEND] POST /achats - achat enregistré avec succès, id:', achat_id);
           res.status(201).json({ success: true, achat_id });
         }
       );
