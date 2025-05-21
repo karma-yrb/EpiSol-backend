@@ -1,10 +1,12 @@
 -- Script pour configurer la base de données et la table des bénéficiaires
 
 -- Créer la base de données
-CREATE DATABASE IF NOT EXISTS episol;
+-- commenter pour utiliser avec un gestionnaire externe (ex : Railway)
+-- CREATE DATABASE IF NOT EXISTS episol;
 
 -- Utiliser la base de données
-USE episol;
+-- commenter pour utiliser avec un gestionnaire externe (ex : Railway)
+-- USE episol; 
 
 -- Création de la table users
 CREATE TABLE IF NOT EXISTS users (

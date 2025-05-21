@@ -2,15 +2,30 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// GET all produits
+// GET produits filtrés (recherche)
 router.get('/', (req, res) => {
-  db.query('SELECT * FROM produits', (err, results) => {
-    if (err) {
-      res.status(500).json({ error: 'Erreur lors de la récupération des produits' });
-    } else {
-      res.json(results);
-    }
-  });
+  const search = req.query.search;
+  if (search && search.length >= 3) {
+    db.query(
+      'SELECT * FROM produits WHERE nom LIKE ? ORDER BY nom ASC',
+      [`%${search}%`],
+      (err, results) => {
+        if (err) {
+          res.status(500).json({ error: 'Erreur lors de la récupération des produits' });
+        } else {
+          res.json(results);
+        }
+      }
+    );
+  } else {
+    db.query('SELECT * FROM produits', (err, results) => {
+      if (err) {
+        res.status(500).json({ error: 'Erreur lors de la récupération des produits' });
+      } else {
+        res.json(results);
+      }
+    });
+  }
 });
 
 // POST add produit
