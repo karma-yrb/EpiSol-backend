@@ -12,13 +12,11 @@ const secretKey = 'your_secret_key';
 // CORS dynamique selon la variable d'environnement
 const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
 app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: [
+    'https://episol.yade-services.fr',
+    'https://api.episol.yade-services.fr',
+    'http://localhost:3000'
+  ],
   credentials: true,
 }));
 
@@ -35,16 +33,16 @@ const authRoutes = require('./routes/auth');
 app.use('/api', authRoutes);
 
 const beneficiairesRoutes = require('./routes/beneficiaires');
-app.use('/beneficiaires', beneficiairesRoutes);
+app.use('/api/beneficiaires', beneficiairesRoutes);
 
 const categoriesRoutes = require('./routes/categories');
-app.use('/categories', categoriesRoutes);
+app.use('/api/categories', categoriesRoutes);
 
 const produitsRoutes = require('./routes/produits');
-app.use('/produits', produitsRoutes);
+app.use('/api/produits', produitsRoutes);
 
 const achatsRoutes = require('./routes/achats');
-app.use('/achats', achatsRoutes);
+app.use('/api/achats', achatsRoutes);
 
 const usersRouter = require('./routes/users');
 app.use('/api', usersRouter);
