@@ -7,7 +7,7 @@ router.get('/', (req, res) => {
   const search = req.query.search;
   if (search && search.length >= 3) {
     db.query(
-      'SELECT * FROM produits WHERE nom LIKE ? ORDER BY nom ASC',
+      `SELECT p.*, c.nom AS categorie FROM produits p LEFT JOIN categories c ON p.categorie_id = c.id WHERE p.nom LIKE ? ORDER BY p.nom ASC`,
       [`%${search}%`],
       (err, results) => {
         if (err) {
@@ -18,13 +18,16 @@ router.get('/', (req, res) => {
       }
     );
   } else {
-    db.query('SELECT * FROM produits', (err, results) => {
-      if (err) {
-        res.status(500).json({ error: 'Erreur lors de la récupération des produits' });
-      } else {
-        res.json(results);
+    db.query(
+      `SELECT p.*, c.nom AS categorie FROM produits p LEFT JOIN categories c ON p.categorie_id = c.id`,
+      (err, results) => {
+        if (err) {
+          res.status(500).json({ error: 'Erreur lors de la récupération des produits' });
+        } else {
+          res.json(results);
+        }
       }
-    });
+    );
   }
 });
 
