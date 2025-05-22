@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
 });
 
 const authRoutes = require('./routes/auth');
-app.use('/', authRoutes);
+app.use('/api', authRoutes);
 
 const beneficiairesRoutes = require('./routes/beneficiaires');
 app.use('/beneficiaires', beneficiairesRoutes);
