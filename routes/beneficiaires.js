@@ -4,8 +4,10 @@ const db = require('../db');
 
 // GET all beneficiaires
 router.get('/', (req, res) => {
+  console.log('[BACKEND] GET /api/beneficiaires - accès reçu');
   db.query('SELECT * FROM beneficiaires', (err, results) => {
     if (err) {
+      console.error('[BACKEND] GET /api/beneficiaires - erreur SQL:', err);
       res.status(500).json({ error: 'Erreur lors de la récupération des bénéficiaires' });
     } else {
       res.json(results);
