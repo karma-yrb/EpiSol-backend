@@ -48,8 +48,10 @@ router.post('/', (req, res) => {
 
 // GET liste des achats (historique)
 router.get('/', (req, res) => {
+  console.log('[BACKEND] GET /api/achats - accès reçu');
   db.query(SQL_LISTE_ACHATS, (err, results) => {
     if (err) {
+      console.error('[BACKEND] GET /api/achats - erreur SQL:', err);
       return res.status(500).json({ error: 'Erreur lors de la récupération des achats' });
     }
     res.json(results);
