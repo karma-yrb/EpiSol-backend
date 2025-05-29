@@ -15,13 +15,17 @@ router.get('/users', (req, res) => {
 });
 
 router.get('/users/:id', (req, res) => {
-  const query = 'SELECT id, nom, prenom, email, username, role FROM users WHERE id = ?';
-  db.query(query, [req.params.id], (err, results) => {
+  const id = req.params.id;
+  console.log(`[BACKEND] GET /api/users/${id} - accès reçu`);
+  db.query('SELECT * FROM users WHERE id = ?', [id], (err, results) => {
     if (err) {
-      res.status(500).json({ error: 'Erreur serveur' });
+      console.error(`[BACKEND] GET /api/users/${id} - erreur SQL:`, err);
+      res.status(500).json({ error: 'Erreur lors de la récupération de l\'utilisateur' });
     } else if (results.length === 0) {
+      console.warn(`[BACKEND] GET /api/users/${id} - utilisateur non trouvé`);
       res.status(404).json({ error: 'Utilisateur non trouvé' });
     } else {
+      console.log(`[BACKEND] GET /api/users/${id} - utilisateur trouvé:`, results[0]);
       res.json(results[0]);
     }
   });
@@ -53,7 +57,7 @@ router.put('/users/:id', async (req, res) => {
   const { nom, prenom, email, username, password, role } = req.body;
   let query, params;
   try {
-    if (password) {
+    if (typeof password === 'string' && password.trim() !== '') {
       const hashedPassword = await bcrypt.hash(password, 10);
       query = 'UPDATE users SET nom = ?, prenom = ?, email = ?, username = ?, password = ?, role = ? WHERE id = ?';
       params = [nom, prenom, email, username, hashedPassword, role, req.params.id];
@@ -86,6 +90,22 @@ router.delete('/users/:id', (req, res) => {
       res.status(204).send();
     }
   });
+});
+
+// GET /users/:id/logs : renvoie les logs de connexion d'un utilisateur (login)
+router.get('/users/:id/logs', (req, res) => {
+  const userId = req.params.id;
+  db.query(
+    'SELECT id, action, ip, user_agent, created_at FROM user_logs WHERE user_id = ? AND action = "login" ORDER BY created_at DESC',
+    [userId],
+    (err, results) => {
+      if (err) {
+        res.status(500).json({ error: 'Erreur lors de la récupération des logs' });
+      } else {
+        res.json(results);
+      }
+    }
+  );
 });
 
 module.exports = router;
