@@ -50,7 +50,7 @@ router.delete('/:id', (req, res) => {
 // PUT update beneficiaire
 router.put('/:id', (req, res) => {
   const { id } = req.params;
-  let { nom, prenom, adresse, telephone, email, numero, ville, dateNaissance } = req.body;
+  let { nom, prenom, adresse, telephone, email, numero, ville, dateNaissance, discount } = req.body;
   function toMysqlDate(val) {
     if (!val) return null;
     if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
@@ -66,8 +66,8 @@ router.put('/:id', (req, res) => {
     if (results.length > 0) {
       return res.status(400).json({ error: "Ce numéro de bénéficiaire est déjà enregistré pour un autre bénéficiaire." });
     }
-    const sql = 'UPDATE beneficiaires SET nom = ?, prenom = ?, date_naissance = ?, adresse = ?, telephone = ?, email = ?, numero = ?, ville = ? WHERE id = ?';
-    const values = [nom || '', prenom || '', date_naissance_final || '', adresse || '', telephone || '', email || '', numero || '', ville || '', id];
+    const sql = 'UPDATE beneficiaires SET nom = ?, prenom = ?, date_naissance = ?, adresse = ?, telephone = ?, email = ?, numero = ?, ville = ?, discount = ? WHERE id = ?';
+    const values = [nom || '', prenom || '', date_naissance_final || '', adresse || '', telephone || '', email || '', numero || '', ville || '', (discount !== undefined ? discount : 50), id];
     db.query(sql, values, (err, result) => {
       if (err) {
         if (err.code === 'ER_DUP_ENTRY') {
@@ -85,7 +85,7 @@ router.put('/:id', (req, res) => {
 
 // POST add beneficiaire
 router.post('/', (req, res) => {
-  let { nom, prenom, adresse, telephone, email, numero, ville, dateNaissance } = req.body;
+  let { nom, prenom, adresse, telephone, email, numero, ville, dateNaissance, discount } = req.body;
   function toMysqlDate(val) {
     if (!val) return null;
     if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
@@ -101,8 +101,8 @@ router.post('/', (req, res) => {
     if (results.length > 0) {
       return res.status(400).json({ error: "Ce numéro de bénéficiaire est déjà enregistré." });
     }
-    const sql = 'INSERT INTO beneficiaires (nom, prenom, date_naissance, adresse, telephone, email, numero, ville) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    const values = [nom || '', prenom || '', date_naissance_final || '', adresse || '', telephone || '', email || '', numero || '', ville || ''];
+    const sql = 'INSERT INTO beneficiaires (nom, prenom, date_naissance, adresse, telephone, email, numero, ville, discount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const values = [nom || '', prenom || '', date_naissance_final || '', adresse || '', telephone || '', email || '', numero || '', ville || '', (discount !== undefined ? discount : 50)];
     db.query(sql, values, (err, result) => {
       if (err) {
         if (err.code === 'ER_DUP_ENTRY') {
@@ -110,7 +110,7 @@ router.post('/', (req, res) => {
         }
         res.status(500).json({ error: 'Erreur lors de l\'ajout du bénéficiaire', details: err });
       } else {
-        res.status(201).json({ id: result.insertId, nom, prenom, date_naissance: date_naissance_final, adresse, telephone, email, numero, ville });
+        res.status(201).json({ id: result.insertId, nom, prenom, date_naissance: date_naissance_final, adresse, telephone, email, numero, ville, discount: (discount !== undefined ? discount : 50) });
       }
     });
   });
