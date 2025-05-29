@@ -25,6 +25,22 @@ router.post('/login', async (req, res) => {
         return res.status(401).json({ message: 'Nom d\'utilisateur ou mot de passe incorrect' });
       }
       const token = generateToken(user);
+      // Log de connexion utilisateur
+      const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || null;
+      const userAgent = req.headers['user-agent'] || null;
+      db.query(
+        'INSERT INTO user_logs (user_id, action, ip, user_agent) VALUES (?, ?, ?, ?)',
+        [user.id, 'login', ip, userAgent],
+        (logErr) => {
+          if (logErr) {
+            console.error('Erreur lors de l\'insertion du log de connexion:', logErr, {
+              user_id: user.id, ip, userAgent
+            });
+          } else {
+            console.log('Log de connexion inséré pour user_id', user.id);
+          }
+        }
+      );
       console.log('Connexion réussie pour', username);
       res.status(200).json({ message: 'Connexion réussie', token, username: user.username, role: user.role });
     } catch (error) {
