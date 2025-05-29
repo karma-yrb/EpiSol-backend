@@ -17,12 +17,17 @@ router.get('/', (req, res) => {
 
 // GET one beneficiaire by id
 router.get('/:id', (req, res) => {
-  db.query('SELECT * FROM beneficiaires WHERE id = ?', [req.params.id], (err, results) => {
+  const id = req.params.id;
+  console.log(`[BACKEND] GET /api/beneficiaires/${id} - accès reçu`);
+  db.query('SELECT * FROM beneficiaires WHERE id = ?', [id], (err, results) => {
     if (err) {
+      console.error(`[BACKEND] GET /api/beneficiaires/${id} - erreur SQL:`, err);
       res.status(500).json({ error: 'Erreur lors de la récupération du bénéficiaire' });
     } else if (results.length === 0) {
+      console.warn(`[BACKEND] GET /api/beneficiaires/${id} - bénéficiaire non trouvé`);
       res.status(404).json({ error: 'Bénéficiaire non trouvé' });
     } else {
+      console.log(`[BACKEND] GET /api/beneficiaires/${id} - bénéficiaire trouvé:`, results[0]);
       res.json(results[0]);
     }
   });
