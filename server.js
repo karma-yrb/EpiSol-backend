@@ -45,7 +45,7 @@ const achatsRoutes = require('./routes/achats');
 app.use('/api/achats', achatsRoutes);
 
 const usersRouter = require('./routes/users');
-app.use('/api', usersRouter);
+app.use('/api/users', usersRouter);
 
 // Suppression du middleware de log debug
 
