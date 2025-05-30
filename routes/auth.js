@@ -24,6 +24,7 @@ router.post('/login', async (req, res) => {
         console.warn('Mot de passe incorrect pour', username);
         return res.status(401).json({ message: 'Nom d\'utilisateur ou mot de passe incorrect' });
       }
+      const is_admin = user.role === 'admin' || user.role === 1 || user.role === true || user.role === '1' || user.is_admin === true;
       const token = generateToken(user);
       // Log de connexion utilisateur
       const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || null;
@@ -42,7 +43,7 @@ router.post('/login', async (req, res) => {
         }
       );
       console.log('Connexion réussie pour', username);
-      res.status(200).json({ message: 'Connexion réussie', token, username: user.username, role: user.role });
+      res.status(200).json({ message: 'Connexion réussie', token, username: user.username, role: user.role, is_admin });
     } catch (error) {
       console.error('Erreur lors de la vérification du mot de passe ou de la génération du token:', error);
       res.status(500).json({ message: 'Erreur serveur' });

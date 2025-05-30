@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS beneficiaires (
     adresse VARCHAR(255) NOT NULL,
     telephone VARCHAR(20) NOT NULL,
     email VARCHAR(255) DEFAULT NULL,
+    discount FLOAT NOT NULL DEFAULT 50,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

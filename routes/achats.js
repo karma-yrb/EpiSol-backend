@@ -90,4 +90,35 @@ router.delete('/:id', (req, res) => {
   });
 });
 
+// POST liste des achats par bénéficiaire
+router.post('/liste-achats', (req, res) => {
+  const { beneficiaireId } = req.body;
+  if (!beneficiaireId) {
+    return res.status(400).json({ error: 'beneficiaireId is required' });
+  }
+
+  // Construction robuste de la requête SQL
+  let sql = SQL_LISTE_ACHATS.trim().replace(/;$/, '');
+  const hasWhere = /where/i.test(sql);
+  if (/order by/i.test(sql)) {
+    sql = sql.replace(/order by/i, `${hasWhere ? 'AND' : 'WHERE'} a.beneficiaire_id = ? ORDER BY`);
+  } else {
+    sql += `${hasWhere ? ' AND' : ' WHERE'} a.beneficiaire_id = ?`;
+  }
+
+  db.query(
+    sql,
+    [beneficiaireId],
+    (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: 'Erreur lors de la récupération des achats', details: err });
+      }
+      if (!results || results.length === 0) {
+        return res.status(404).json({ error: 'No purchases found for this beneficiary' });
+      }
+      res.status(200).json({ achats: results });
+    }
+  );
+});
+
 module.exports = router;
