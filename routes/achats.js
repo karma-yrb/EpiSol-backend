@@ -61,13 +61,18 @@ router.get('/', (req, res) => {
 // GET détail d'un achat
 router.get('/:id', (req, res) => {
   const { id } = req.params;
+  console.log('[BACKEND] GET /api/achats/:id - id reçu:', id); // LOG DEBUG
   db.query(SQL_DETAIL_ACHAT, [id], (err, results) => {
+    console.log('[BACKEND] Résultat SQL_DETAIL_ACHAT:', { err, results }); // LOG DEBUG
     if (err || results.length === 0) {
+      console.warn('[BACKEND] GET /api/achats/:id - achat non trouvé ou erreur SQL', { id, err, results }); // LOG DEBUG
       return res.status(404).json({ error: 'Achat non trouvé' });
     }
     const achat = results[0];
     db.query(SQL_DETAIL_LIGNES, [id], (err2, lignes) => {
+      console.log('[BACKEND] Résultat SQL_DETAIL_LIGNES:', { err2, lignes }); // LOG DEBUG
       if (err2) {
+        console.error('[BACKEND] GET /api/achats/:id - erreur SQL_DETAIL_LIGNES', { id, err2 }); // LOG DEBUG
         return res.status(500).json({ error: 'Erreur lors de la récupération des lignes d\'achat' });
       }
       achat.lignes = lignes;
