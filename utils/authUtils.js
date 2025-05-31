@@ -11,7 +11,15 @@ function generateToken(user) {
   // Ajoute is_admin booléen dans le token selon le champ role
   const is_admin = user.role === 'admin' || user.role === 1 || user.role === true || user.role === '1' || user.is_admin === true;
   return jwt.sign(
-    { username: user.username, role: user.role, id: user.id, is_admin },
+    { 
+      username: user.username, 
+      role: user.role, 
+      id: user.id, 
+      is_admin,
+      nom: user.nom,
+      prenom: user.prenom,
+      email: user.email
+    },
     secretKey,
     { expiresIn: '1h' }
   );
