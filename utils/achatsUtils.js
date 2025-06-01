@@ -9,7 +9,7 @@ function calcTotalAchat(lignes) {
 const SQL_INSERT_ACHAT = 'INSERT INTO achats (beneficiaire_id, date_achat, total) VALUES (?, NOW(), ?)';
 const SQL_INSERT_ACHAT_LIGNES = 'INSERT INTO achats_lignes (achat_id, produit_id, quantite, prix_unitaire) VALUES ?';
 const SQL_LISTE_ACHATS = `SELECT a.id, a.date_achat, a.total, b.nom AS beneficiaire_nom, b.prenom AS beneficiaire_prenom,
-  (SELECT SUM(al.quantite) FROM achats_lignes al WHERE al.achat_id = a.id) AS quantite
+  COALESCE((SELECT SUM(al.quantite) FROM achats_lignes al WHERE al.achat_id = a.id), 0) AS quantite
   FROM achats a
   JOIN beneficiaires b ON a.beneficiaire_id = b.id
   ORDER BY a.date_achat DESC, a.id DESC`;
