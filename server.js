@@ -4,6 +4,7 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const versionInfo = require('./utils/versionInfo');
 const app = express();
 const port = 3001;
 
@@ -27,6 +28,11 @@ const db = require('./db'); // Import the database connection from db.js
 // Ajouter une route pour la racine
 app.get('/', (req, res) => {
   res.send("Bienvenue à l'API de l'épicerie sociale");
+});
+
+// Route version
+app.get('/api/version', (req, res) => {
+  res.json(versionInfo.getVersionInfo());
 });
 
 const authRoutes = require('./routes/auth');
@@ -54,9 +60,10 @@ app.get('/test', (req, res) => {
 });
 
 app.listen(port, () => {
-  // Serveur démarré
+  versionInfo.logStartup();
+  console.log(`🌐 Server running on port ${port}`);
 }).on('error', (err) => {
-  // Erreur lors du démarrage du serveur
+  console.error('❌ Error starting server:', err);
 });
 
 // Gestion propre des 404 (à placer tout à la fin)
