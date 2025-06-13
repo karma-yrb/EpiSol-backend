@@ -39,7 +39,7 @@ router.put('/:id', (req, res) => {
     } else if (result.affectedRows === 0) {
       res.status(404).json({ error: 'Catégorie non trouvée' });
     } else {
-      res.json({ id, nom });
+      res.json({ id: parseInt(id, 10), nom });
     }
   });
 });
