@@ -6,21 +6,25 @@ const mysql = require('mysql2');
 let dbConfig;
 
 if (isTiDB) {
-  // Configuration TiDB Cloud
+  // Configuration TiDB Cloud avec Pool
   dbConfig = {
     host: process.env.TIDB_HOST,
     user: process.env.TIDB_USER,
     password: process.env.TIDB_PASSWORD,
     database: process.env.TIDB_DATABASE,
-    port: process.env.TIDB_PORT ? parseInt(process.env.TIDB_PORT) : 4000,    ssl: {
+    port: process.env.TIDB_PORT ? parseInt(process.env.TIDB_PORT) : 4000,
+    ssl: {
       minVersion: 'TLSv1.2',
       rejectUnauthorized: false
     },
-    connectTimeout: 30000,
-    acquireTimeout: 30000,
-    timeout: 30000
+    connectionLimit: 10,
+    reconnect: true,
+    acquireTimeout: 60000,
+    timeout: 60000,
+    keepAliveInitialDelay: 0,
+    enableKeepAlive: true
   };
-  console.log('🌐 Configuration TiDB Cloud activée');
+  console.log('🌐 Configuration TiDB Cloud activée (Pool)');
 } else {
   // Configuration Railway/MySQL classique
   dbConfig = {
@@ -33,20 +37,34 @@ if (isTiDB) {
   console.log('🚂 Configuration Railway activée');
 }
 
-const db = mysql.createConnection(dbConfig);
+const db = isTiDB ? mysql.createPool(dbConfig) : mysql.createConnection(dbConfig);
 
-db.connect((err) => {
-  if (err) {
-    console.error('❌ Erreur de connexion à la base de données:', err);
-    console.error('🔧 Vérifiez vos variables d\'environnement:', {
-      provider: isTiDB ? 'TiDB Cloud' : 'Railway',
-      host: isTiDB ? process.env.TIDB_HOST : process.env.DB_HOST,
-      database: isTiDB ? process.env.TIDB_DATABASE : process.env.DB_NAME,
-      port: isTiDB ? process.env.TIDB_PORT : process.env.DB_PORT
-    });
-  } else {
-    console.log(`✅ Connexion à la base de données réussie (${isTiDB ? 'TiDB Cloud' : 'Railway'})`);
-  }
-});
+// Test de connexion différent selon le type
+if (isTiDB) {
+  // Pour un pool, on teste avec getConnection
+  db.getConnection((err, connection) => {
+    if (err) {
+      console.error('❌ Erreur de connexion TiDB Pool:', err);
+    } else {
+      console.log('✅ Pool TiDB Cloud connecté avec succès');
+      connection.release(); // Libérer la connexion de test
+    }
+  });
+} else {
+  // Pour une connexion simple
+  db.connect((err) => {
+    if (err) {
+      console.error('❌ Erreur de connexion à la base de données:', err);
+      console.error('🔧 Vérifiez vos variables d\'environnement:', {
+        provider: isTiDB ? 'TiDB Cloud' : 'Railway',
+        host: isTiDB ? process.env.TIDB_HOST : process.env.DB_HOST,
+        database: isTiDB ? process.env.TIDB_DATABASE : process.env.DB_NAME,
+        port: isTiDB ? process.env.TIDB_PORT : process.env.DB_PORT
+      });
+    } else {
+      console.log(`✅ Connexion à la base de données réussie (${isTiDB ? 'TiDB Cloud' : 'Railway'})`);
+    }
+  });
+}
 
 module.exports = db;
