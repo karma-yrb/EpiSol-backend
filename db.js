@@ -22,7 +22,9 @@ if (isTiDB) {
     acquireTimeout: 60000,
     timeout: 60000,
     keepAliveInitialDelay: 0,
-    enableKeepAlive: true
+    enableKeepAlive: true,
+    charset: 'utf8mb4',
+    timezone: 'Z'
   };
   console.log('🌐 Configuration TiDB Cloud activée (Pool)');
 } else {
@@ -32,7 +34,9 @@ if (isTiDB) {
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306
+    port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
+    charset: 'utf8mb4',
+    timezone: 'Z'
   };
   console.log('🚂 Configuration Railway activée');
 }

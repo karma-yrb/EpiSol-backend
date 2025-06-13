@@ -21,7 +21,13 @@ app.use(cors({
   credentials: true,
 }));
 
-app.use(express.json());
+// Configuration UTF-8 pour les réponses
+app.use((req, res, next) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  next();
+});
+
+app.use(express.json({ limit: '10mb' }));
 
 const db = require('./db'); // Import the database connection from db.js
 
