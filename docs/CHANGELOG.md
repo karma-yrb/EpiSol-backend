@@ -1,5 +1,14 @@
 # 📝 CHANGELOG - EpiSol Backend
 
+## [1.1.1] - 2025-07-04
+
+### 🔧 Correctifs et améliorations
+- Renforcement de la gestion des rôles admin/superadmin (restrictions, sécurité)
+- Cohérence avec la version frontend 1.0.7 (UI et API)
+- Documentation et version mises à jour
+
+---
+
 ## [1.1.0] - 2025-06-13
 
 ### 🚀 MAJOR - Migration TiDB Cloud

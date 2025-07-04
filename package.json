@@ -1,6 +1,6 @@
 {
   "name": "episol-backend",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "server.js",
   "dependencies": {
     "axios": "^1.9.0",
